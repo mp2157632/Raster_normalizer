@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Raster Normalizer</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+            min-height: 100vh;
+            padding: 30px 15px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1100px;
+            margin: auto;
+            background: white;
+            padding: 35px;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        }
+
+        h1 {
+            margin-top: 0;
+            text-align: center;
+            font-size: 32px;
+        }
+
+        .subtitle {
+            color: #666;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .upload-box {
+            border: 2px dashed #aaa;
+            border-radius: 12px;
+            padding: 30px 20px;
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        input[type="file"] {
+            margin: 20px 0;
+        }
+
+        button {
+            border: none;
+            padding: 13px 28px;
+            border-radius: 8px;
+            background: #222;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            opacity: 0.85;
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .images {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            margin-top: 30px;
+        }
+
+        .image-box {
+            border: 1px solid #ddd;
+            border-radius: 12px;
+            padding: 15px;
+            background: #fafafa;
+        }
+
+        .image-box h2 {
+            text-align: center;
+            font-size: 20px;
+        }
+
+        .preview {
+            width: 100%;
+            max-height: 500px;
+            object-fit: contain;
+            display: none;
+            background: #eee;
+            border-radius: 8px;
+        }
+
+        .settings {
+            margin-top: 25px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 12px;
+        }
+
+        .settings h2 {
+            margin-top: 0;
+        }
+
+        .setting {
+            margin: 15px 0;
+        }
+
+        .setting label {
+            display: block;
+            margin-bottom: 7px;
+            font-weight: bold;
+        }
+
+        .setting input {
+            width: 100%;
+        }
+
+        #status {
+            margin-top: 20px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        #download {
+            display: none;
+            margin: 25px auto 0;
+            padding: 13px 25px;
+            background: #222;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            text-align: center;
+            width: fit-content;
+        }
+
+        .supported {
+            color: #777;
+            font-size: 14px;
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        @media (max-width: 700px) {
+
+            .images {
+                grid-template-columns: 1fr;
+            }
+
+            .container {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 26px;
+            }
+        }
+
+    </style>
+</head>
+
+
+<body>
+
+    <div class="container">
+
+        <h1>Raster Normalizer</h1>
+
+        <p class="subtitle">
+            Normalize your JPG or TIFF raster easily.
+        </p>
+
+
+        <!-- Upload -->
+
+        <div class="upload-box">
+
+            <p>
+                Select a JPG or TIFF file
+            </p>
+
+            <input
+                type="file"
+                id="fileInput"
+                accept=".jpg,.jpeg,.tif,.tiff"
+            >
+
+            <br>
+
+            <button
+                type="button"
+                id="normalizeButton"
+            >
+                Normalize
+            </button>
+
+        </div>
+
+
+        <!-- Settings -->
+
+        <div class="settings">
+
+            <h2>Normalization Settings</h2>
+
+            <div class="setting">
+
+                <label for="minValue">
+                    Minimum Value: <span id="minLabel">0</span>
+                </label>
+
+                <input
+                    type="range"
+                    id="minValue"
+                    min="0"
+                    max="255"
+                    value="0"
+                >
+
+            </div>
+
+
+            <div class="setting">
+
+                <label for="maxValue">
+                    Maximum Value: <span id="maxLabel">255</span>
+                </label>
+
+                <input
+                    type="range"
+                    id="maxValue"
+                    min="1"
+                    max="255"
+                    value="255"
+                >
+
+            </div>
+
+        </div>
+
+
+        <!-- Status -->
+
+        <div id="status"></div>
+
+
+        <!-- Input / Output -->
+
+        <div class="images">
+
+            <div class="image-box">
+
+                <h2>Input Image</h2>
+
+                <img
+                    id="inputPreview"
+                    class="preview"
+                    alt="Input Image"
+                >
+
+            </div>
+
+
+            <div class="image-box">
+
+                <h2>Output Image</h2>
+
+                <img
+                    id="outputPreview"
+                    class="preview"
+                    alt="Normalized Output"
+                >
+
+            </div>
+
+        </div>
+
+
+        <!-- Download -->
+
+        <a
+            id="download"
+            href="#"
+        >
+            Download Normalized Raster
+        </a>
+
+
+        <p class="supported">
+            Supported formats: JPG, JPEG, TIFF, TIF
+        </p>
+
+    </div>
+
+
+    <script>
+
+        const fileInput =
+            document.getElementById("fileInput");
+
+        const normalizeButton =
+            document.getElementById("normalizeButton");
+
+        const status =
+            document.getElementById("status");
+
+        const download =
+            document.getElementById("download");
+
+        const inputPreview =
+            document.getElementById("inputPreview");
+
+        const outputPreview =
+            document.getElementById("outputPreview");
+
+        const minValue =
+            document.getElementById("minValue");
+
+        const maxValue =
+            document.getElementById("maxValue");
+
+        const minLabel =
+            document.getElementById("minLabel");
+
+        const maxLabel =
+            document.getElementById("maxLabel");
+
+
+        // Show selected input image
+
+        fileInput.addEventListener(
+            "change",
+            function () {
+
+                const file = fileInput.files[0];
+
+                if (!file) {
+                    return;
+                }
+
+                const fileURL =
+                    URL.createObjectURL(file);
+
+                inputPreview.src = fileURL;
+
+                inputPreview.style.display = "block";
+
+                outputPreview.style.display = "none";
+
+                download.style.display = "none";
+
+                status.textContent =
+                    "Input image selected.";
+
+            }
+        );
+
+
+        // Update slider labels
+
+        minValue.addEventListener(
+            "input",
+            function () {
+
+                minLabel.textContent =
+                    minValue.value;
+
+            }
+        );
+
+
+        maxValue.addEventListener(
+            "input",
+            function () {
+
+                maxLabel.textContent =
+                    maxValue.value;
+
+            }
+        );
+
+
+        // Normalize
+
+        normalizeButton.addEventListener(
+            "click",
+            async function () {
+
+                const file =
+                    fileInput.files[0];
+
+                if (!file) {
+
+                    status.textContent =
+                        "Please select a file first.";
+
+                    return;
+
+                }
+
+
+                if (
+                    Number(minValue.value)
+                    >=
+                    Number(maxValue.value)
+                ) {
+
+                    status.textContent =
+                        "Minimum Value must be smaller than Maximum Value.";
+
+                    return;
+
+                }
+
+
+                const formData =
+                    new FormData();
+
+                formData.append(
+                    "file",
+                    file
+                );
+
+                formData.append(
+                    "min_value",
+                    minValue.value
+                );
+
+                formData.append(
+                    "max_value",
+                    maxValue.value
+                );
+
+
+                normalizeButton.disabled = true;
+
+                download.style.display = "none";
+
+                outputPreview.style.display = "none";
+
+                status.textContent =
+                    "Processing...";
+
+
+                try {
+
+                    const response =
+                        await fetch(
+                            "/normalize",
+                            {
+                                method: "POST",
+                                body: formData
+                            }
+                        );
+
+
+                    const result =
+                        await response.json();
+
+
+                    if (!response.ok) {
+
+                        throw new Error(
+                            result.error ||
+                            "Processing failed."
+                        );
+
+                    }
+
+
+                    status.textContent =
+                        "✓ " + result.message;
+
+
+                    outputPreview.src =
+                        result.preview_url +
+                        "?t=" +
+                        new Date().getTime();
+
+                    outputPreview.style.display =
+                        "block";
+
+
+                    download.href =
+                        result.download_url;
+
+                    download.style.display =
+                        "block";
+
+                }
+
+
+                catch (error) {
+
+                    status.textContent =
+                        "❌ " + error.message;
+
+                }
+
+
+                normalizeButton.disabled =
+                    false;
+
+            }
+        );
+
+    </script>
+
+</body>
+
+</html>
